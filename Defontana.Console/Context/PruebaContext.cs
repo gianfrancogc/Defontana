@@ -26,7 +26,7 @@ namespace Defontana.Console.Context
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=lab-defontana.caporvnn6sbh.us-east-1.rds.amazonaws.com;Initial Catalog=Prueba;user id=ReadOnly;password=d*3PSf2MmRX9vJtA5sgwSphCVQ26*T53uU");
+                optionsBuilder.UseSqlServer("Data Source=lab-defontana.caporvnn6sbh.us-east-1.rds.amazonaws.com;Initial Catalog=Prueba;user id=ReadOnly;password=d*3PSf2MmRX9vJtA5sgwSphCVQ26*T53uU;MultipleActiveResultSets=True");
             }
         }
 

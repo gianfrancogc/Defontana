@@ -18,10 +18,9 @@ using (var db = new PruebaContext())
     var ventas = await db.Venta
         .Include(l => l.IdLocalNavigation)
         .Include(x => x.VentaDetalles)
-        
         .ThenInclude(vd => vd.IdProductoNavigation)
         .ThenInclude(pr => pr.IdMarcaNavigation)
-        .Where(x => x.Fecha >= DateTime.Now.AddDays(-30)).ToListAsync();
+        .Where(x => x.Fecha > DateTime.Now.AddDays(-30)).ToListAsync();
 
     //•	El total de ventas de los últimos 30 días (monto total y cantidad total de ventas).
 
@@ -90,8 +89,8 @@ using (var db = new PruebaContext())
 
 
 
-        Console.WriteLine($"Producto con mayor monto total de ventas: {productoMasVendido.IdProducto}   {productoMasVendido.Producto}");
-        Console.WriteLine($"Monto total de ventas: {productoMasVendido.MontoTotalVentas.ToString("N")}");
+        Console.WriteLine($"Producto con mayor monto total de ventas Id: {productoMasVendido.IdProducto}  Nombre: {productoMasVendido.Producto}");
+
 
         //•	Indicar el local con mayor monto de ventas
 
@@ -100,24 +99,18 @@ using (var db = new PruebaContext())
         Console.WriteLine(" ");
 
         var localMayorVenta = ventas
-                .GroupBy(v => v.IdLocalNavigation.Nombre)
+                .GroupBy(v => new { v.IdLocalNavigation.Nombre })
                 .Select(g => new
                 {
-                    //IdLocal = g.Key,
+                    Local = g.Key,
                     MontoTotalVentas = g.Sum(v => v.Total)
                 })
                 .OrderByDescending(x => x.MontoTotalVentas)
-                .ToList();
+                .FirstOrDefault();
 
-        foreach (var item in localMayorVenta)
-        {
-            Console.WriteLine(item.MontoTotalVentas);
-        }
 
-        //Console.WriteLine(localMayorVenta.ForEach(x => Console.WriteLine(x.IdLocal)));
 
-        //Console.WriteLine($"Local con mayor monto total de ventas: {localMayorVenta.MontoTotalVentas}");
-        //Console.WriteLine($"Monto total de ventas: {localMayorVenta.MontoTotalVentas.ToString("N")}");
+        Console.WriteLine($"Local con mayor monto de ventas: {localMayorVenta.Local}");
 
 
         //•	¿Cuál es la marca con mayor margen de ganancias?
@@ -166,9 +159,10 @@ using (var db = new PruebaContext())
                    ProductoMasVendido = g.OrderByDescending(x => x.CantidadTotal).FirstOrDefault()?.Nombre,
                    ProductoIdMasVendido = g.OrderByDescending(x => x.CantidadTotal).FirstOrDefault()?.IdProducto
                })
+               .OrderBy(x => x.IdLocal)
                .ToList();
 
-        productosMasVendidosPorLocal.ForEach(x => Console.WriteLine($"Local id: {x.IdLocal} producto mas vendido: {x.ProductoIdMasVendido} {x.ProductoMasVendido}"));
+        productosMasVendidosPorLocal.ForEach(x => Console.WriteLine($"Local id: {x.IdLocal} producto mas vendido: {x.ProductoMasVendido}"));
 
     }
     catch (Exception ex)
